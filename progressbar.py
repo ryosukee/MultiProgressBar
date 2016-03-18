@@ -12,10 +12,15 @@ class ProgressManager:
         self.p.start()
 
     def draw(self):
+        order2maxtext = dict()
         while self.is_running.value == 1:
-            time.sleep(0.05)
-            for text in self.order2text.values():
+            for order, text in self.order2text.items():
+                order2maxtext[order] = text
+                text = '\n' * order + text + '\x1b[1A' * order
                 print(text, end='', flush=True)
+            time.sleep(0.05)
+        for text in order2maxtext.values():
+            print(text, flush=True)
 
     def finish(self):
         self.is_running.value = 0
@@ -86,9 +91,6 @@ class ProgressBar:
         proglen = int(remlen * per)
         bar = '[{}{}]'.format('#' * proglen, ' ' * (remlen - proglen))
         text += bar
-
-        text = '\n' * self.order + text + '\x1b[1A' * self.order
-
         return text
 
     def get_col(self):
