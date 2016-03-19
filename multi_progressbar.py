@@ -100,7 +100,7 @@ class ProgressBar:
         header = '\r' + self.cursor + indent
         per = value / self.max_value
         length = len(str(self.max_value))
-        template = '{{}}: {{:0>{length}}}/{{}}: {{:.2f}}|'.format(length=length).format(self.text, value, self.max_value, per * 100)
+        template = '{{}}: {{:0>{length}}}/{{}}: {{:.1f}}%|'.format(length=length).format(self.text, value, self.max_value, per * 100)
         text = header + template
         remlen = self.get_col() - len(text) - 2
         proglen = int(remlen * per)
