@@ -1,7 +1,7 @@
 import time
 import random
 from multiprocessing import Process
-from multi_progressbar import ProgressManager
+from mprogressbar import ProgressManager
 
 
 def hoge(p):
