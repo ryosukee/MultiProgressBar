@@ -17,6 +17,8 @@ progress_tree = m.new_tree()
 progress_tree2 = m.new_tree(offset=5)
 args = [progress_tree, progress_tree2]
 processes = list()
+print('start')
+m.start()
 for i in range(2):
     p = Process(target=hoge, args=(args[i],))
     processes.append(p)
@@ -24,3 +26,4 @@ for i in range(2):
 for p in processes:
     p.join()
 m.finish()
+print('finish')
