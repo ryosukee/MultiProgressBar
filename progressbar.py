@@ -19,8 +19,11 @@ class ProgressManager:
                 text = '\n' * order + text + '\x1b[1A' * order
                 print(text, end='', flush=True)
             time.sleep(0.05)
-        for text in order2maxtext.values():
-            print(text, flush=True)
+        for i in range(max(order2maxtext) + 1):
+            if i not in order2maxtext:
+                print('', flush=True)
+            else:
+                print(order2maxtext[i], flush=True)
 
     def new_tree(self, offset=None):
         if offset is None:
