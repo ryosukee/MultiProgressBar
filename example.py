@@ -6,11 +6,11 @@ from multi_progressbar import ProgressManager
 
 def hoge(p):
     for _ in p('Progress1', order=1, maxv=2, nest=0)(range(2)):
-        for _ in p('Progress2', order=2, maxv=3, nest=1)(range(3)):
-            for _ in p('Progress3', order=3, maxv=3, nest=2)(range(3)):
-                time.sleep(random.random())
-        for _ in p('Progress4', order=4, maxv=3, nest=1)(range(3)):
-            time.sleep(random.random())
+        for _ in p('Progress2', order=2, maxv=2, nest=1)(range(2)):
+            for _ in p('Progress3', order=3, maxv=15, nest=2)(range(15)):
+                time.sleep(random.uniform(0.01, 0.2))
+        for _ in p('Progress4', order=4, maxv=10, nest=1)(range(10)):
+            time.sleep(random.uniform(0.01, 0.2))
 
 m = ProgressManager()
 progress_tree = m.new_tree()
