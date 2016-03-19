@@ -9,7 +9,6 @@ class ProgressManager:
         self.order2text = m.dict()
         self.is_running = Value('i', 1)
         self.p = Process(target=self.draw)
-        self.p.start()
 
     def draw(self):
         order2maxtext = dict()
@@ -33,8 +32,12 @@ class ProgressManager:
                 offset = len(self.order2text)
         return ProgressTree(self.order2text, offset=offset)
 
+    def start(self):
+        self.p.start()
+
     def finish(self):
         self.is_running.value = 0
+        self.p.join()
 
 
 class ProgressTree:
