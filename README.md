@@ -1,5 +1,5 @@
 # MultiProgressBar
-MultiProgressBar show many Progress bars in parallel
+MultiProgressBar shows many progress bars in parallel.
 
 
 ![example](https://github.com/ryosukee/MultiProgressBar/blob/master/example.gif)
