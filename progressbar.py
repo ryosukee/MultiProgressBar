@@ -44,7 +44,7 @@ class ProgressTree:
         self.order2text = order2text
         self.order2pbar = dict()
 
-    def add(self, text, order, maxv, nest):
+    def __call__(self, text, order, maxv, nest):
         assert order > 0, 'order should be over 1'
         order -= 1
         order += self.offset
