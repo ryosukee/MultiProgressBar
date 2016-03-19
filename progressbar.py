@@ -22,6 +22,14 @@ class ProgressManager:
         for text in order2maxtext.values():
             print(text, flush=True)
 
+    def new_tree(self, offset=None):
+        if offset is None:
+            if len(self.order2text) == 0:
+                offset = 0
+            else:
+                offset = len(self.order2text)
+        return ProgressTree(self.order2text, offset=offset)
+
     def finish(self):
         self.is_running.value = 0
 
@@ -36,13 +44,14 @@ class ProgressTree:
     def add(self, text, order, maxv, nest):
         assert order > 0, 'order should be over 1'
         order -= 1
+        order += self.offset
 
         # reuse
         if order in self.order2pbar:
             pbar = self.order2pbar[order]
             pbar.value = 0
         else:
-            pbar = ProgressBar(maxv, self.offset + order, nest, self.indent, text, self.update, self.order2text)
+            pbar = ProgressBar(maxv, order, nest, self.indent, text, self.update, self.order2text)
             self.order2pbar[order] = pbar
         return pbar
 
