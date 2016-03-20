@@ -46,11 +46,14 @@ class ProgressTree:
         self.offset = offset
         self.order2text = order2text
         self.order2pbar = dict()
+        self.cursor = '-->'
+        self.non_cursor = '   '
 
-    def __call__(self, text, order, maxv, nest):
+    def __call__(self, text, maxv, order, nest):
         assert order > 0, 'order should be over 1'
         order -= 1
         order += self.offset
+        text = text.replace('\n', ' ')
 
         # reuse
         if order in self.order2pbar:
@@ -61,11 +64,25 @@ class ProgressTree:
             self.order2pbar[order] = pbar
         return pbar
 
+    def print(self, text, order, nest):
+        order -= 1
+        order += self.offset
+        if text == '':
+            text = text.replace('\n', ' ')
+            text = self.non_cursor + ' ' * self.indent * nest + text
+            remlen = get_col() - len(text)
+            text += ' ' * remlen
+        else:
+            text = text.replace('\n', ' ')
+            text = self.non_cursor + ' ' * self.indent * nest + text
+
+        self.order2text[order] = text
+
     def update(self, pbar):
         for p in self.order2pbar.values():
-            p.cursor = '   '
+            p.cursor = self.non_cursor
             self.order2text[p.order] = p.get_text()
-        pbar.cursor = '-->'
+        pbar.cursor = self.cursor
 
     def finish(self):
         self.is_running.value = 0
@@ -102,11 +119,12 @@ class ProgressBar:
         length = len(str(self.max_value))
         template = '{{}}: {{:0>{length}}}/{{}}: {{:.1f}}%|'.format(length=length).format(self.text, value, self.max_value, per * 100)
         text = header + template
-        remlen = self.get_col() - len(text) - 2
+        remlen = get_col() - len(text) - 2
         proglen = int(remlen * per)
         bar = '[{}{}]'.format('#' * proglen, ' ' * (remlen - proglen))
         text += bar
         return text
 
-    def get_col(self):
-        return os.get_terminal_size().columns
+
+def get_col():
+    return os.get_terminal_size().columns
