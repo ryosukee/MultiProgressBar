@@ -67,8 +67,9 @@ class ProgressTree:
     def print(self, text, order, nest, fill=' '):
         order -= 1
         order += self.offset
-        text = text.replace('\n', ' ')
-        text = self.non_cursor + ' ' * self.indent * nest + text
+        if text != '':
+            text = text.replace('\n', ' ')
+            text = self.non_cursor + ' ' * self.indent * nest + text
         remlen = get_col() - len(text)
         text += fill * remlen
 
