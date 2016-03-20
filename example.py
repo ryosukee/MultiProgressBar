@@ -5,11 +5,13 @@ from mprogressbar import ProgressManager
 
 
 def hoge(p):
-    for _ in p('Progress1', order=1, maxv=2, nest=0)(range(2)):
-        for _ in p('Progress2', order=2, maxv=2, nest=1)(range(2)):
-            for _ in p('Progress3', order=3, maxv=15, nest=2)(range(15)):
+    for _ in p('Process 1', order=1, maxv=2, nest=0)(range(2)):
+        for _ in p('Process 2', order=2, maxv=2, nest=1)(range(2)):
+            p.print('', order=4, nest=3)
+            for _ in p('Process 3', order=3, maxv=15, nest=2)(range(15)):
                 time.sleep(random.uniform(0.01, 0.2))
-        for _ in p('Progress4', order=4, maxv=10, nest=1)(range(10)):
+            p.print('|-->Process 3 finished', order=4, nest=3)
+        for _ in p('Process 4', order=5, maxv=10, nest=1)(range(10)):
             time.sleep(random.uniform(0.01, 0.2))
 
 m = ProgressManager()
