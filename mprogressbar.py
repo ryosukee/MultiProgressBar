@@ -64,17 +64,13 @@ class ProgressTree:
             self.order2pbar[order] = pbar
         return pbar
 
-    def print(self, text, order, nest):
+    def print(self, text, order, nest, fill=' '):
         order -= 1
         order += self.offset
-        if text == '':
-            text = text.replace('\n', ' ')
-            text = self.non_cursor + ' ' * self.indent * nest + text
-            remlen = get_col() - len(text)
-            text += ' ' * remlen
-        else:
-            text = text.replace('\n', ' ')
-            text = self.non_cursor + ' ' * self.indent * nest + text
+        text = text.replace('\n', ' ')
+        text = self.non_cursor + ' ' * self.indent * nest + text
+        remlen = get_col() - len(text)
+        text += fill * remlen
 
         self.order2text[order] = text
 
