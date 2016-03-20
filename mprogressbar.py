@@ -36,6 +36,7 @@ class ProgressManager:
         self.p.start()
 
     def finish(self):
+        time.sleep(0.5)
         self.is_running.value = 0
         self.p.join()
 
