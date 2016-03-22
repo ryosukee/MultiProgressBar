@@ -11,18 +11,14 @@ class ProgressManager:
         self.p = Process(target=self.draw)
 
     def draw(self):
-        order2maxtext = dict()
+        cuu1 = '\x1b[A'
+        dl1 = '\x1b[M'
+        upnum = 0
         while self.is_running.value == 1:
-            for order, text in self.order2text.items():
-                order2maxtext[order] = text
-                text = '\n' * order + text + '\x1b[1A' * order
-                print(text, end='', flush=True)
-            time.sleep(0.05)
-        for i in range(max(order2maxtext) + 1):
-            if i not in order2maxtext:
-                print('', flush=True)
-            else:
-                print(order2maxtext[i], flush=True)
+            print(cuu1 * upnum, end='')
+            text = '\n'.join(self.order2text.values())
+            upnum = text.count('\n') + 1
+            print(text, flush=True)
 
     def new_tree(self, offset=None):
         if offset is None:
@@ -112,7 +108,8 @@ class ProgressBar:
     def get_text(self, value=None):
         value = self.value if value is None else value
         indent = ' ' * (self.nest * self.indent)
-        header = '\r' + self.cursor + indent
+        #header = '\r' + self.cursor + indent
+        header = self.cursor + indent
         per = value / self.max_value
         length = len(str(self.max_value))
         template = '{{}}: {{:0>{length}}}/{{}}: {{:.1f}}%|'.format(length=length).format(self.text, value, self.max_value, per * 100)
