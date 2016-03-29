@@ -1,24 +1,32 @@
 import os
+import sys
 import time
 from multiprocessing import Process, Manager, Value
 
 
 class ProgressManager:
-    def __init__(self):
+    def __init__(self, target=sys.stdout, width=None):
         m = Manager()
         self.order2text = m.dict()
         self.is_running = Value('i', 1)
-        self.p = Process(target=self.draw)
+        self.p = Process(target=self.draw, args=(target,))
+        if width is None:
+            width = get_col()
+        self.width = width
 
-    def draw(self):
+    def draw(self, target):
         cuu1 = '\x1b[A'
         dl1 = '\x1b[M'
         upnum = 0
+        sp = target.tell()
         while self.is_running.value == 1:
-            print(cuu1 * upnum, end='')
             text = '\n'.join(self.order2text.values())
-            upnum = text.count('\n') + 1
-            print(text, flush=True)
+            if target != sys.stdout:
+                target.seek(sp)
+            else:
+                print(cuu1 * upnum, end='')
+                upnum = text.count('\n') + 1
+            print(text, flush=True, file=target)
 
     def new_tree(self, offset=None):
         if offset is None:
@@ -26,7 +34,7 @@ class ProgressManager:
                 offset = 0
             else:
                 offset = len(self.order2text)
-        return ProgressTree(self.order2text, offset=offset)
+        return ProgressTree(self.order2text, self.width, offset=offset)
 
     def start(self):
         self.p.start()
@@ -38,13 +46,14 @@ class ProgressManager:
 
 
 class ProgressTree:
-    def __init__(self, order2text, indent=3, offset=0):
+    def __init__(self, order2text, width, indent=3, offset=0):
         self.indent = indent
         self.offset = offset
         self.order2text = order2text
         self.order2pbar = dict()
         self.cursor = '-->'
         self.non_cursor = '   '
+        self.width = width
 
     def __call__(self, text, maxv, order, nest):
         assert order > 0, 'order should be over 1'
@@ -57,7 +66,7 @@ class ProgressTree:
             pbar = self.order2pbar[order]
             pbar.value = 0
         else:
-            pbar = ProgressBar(maxv, order, nest, self.indent, text, self.update, self.order2text)
+            pbar = ProgressBar(maxv, order, nest, self.indent, text, self.update, self.order2text, self.width)
             self.order2pbar[order] = pbar
         return pbar
 
@@ -67,7 +76,7 @@ class ProgressTree:
         if text != '':
             text = text.replace('\n', ' ')
             text = self.non_cursor + ' ' * self.indent * nest + text
-        remlen = get_col() - len(text)
+        remlen = self.width - len(text)
         text += fill * remlen
 
         self.order2text[order] = text
@@ -84,7 +93,7 @@ class ProgressTree:
 
 
 class ProgressBar:
-    def __init__(self, max_value, order, nest, indent, text, update, order2text):
+    def __init__(self, max_value, order, nest, indent, text, update, order2text, width):
         self.value = 0
         self.max_value = max_value
         self.order = order
@@ -96,6 +105,7 @@ class ProgressBar:
         self.cursor = '   '
         self.update = update
         self.order2text = order2text
+        self.width = width
 
     def __call__(self, iterable):
         self.update(self)
@@ -114,7 +124,7 @@ class ProgressBar:
         length = len(str(self.max_value))
         template = '{{}}: {{:0>{length}}}/{{}}: {{:.1f}}%|'.format(length=length).format(self.text, value, self.max_value, per * 100)
         text = header + template
-        remlen = get_col() - len(text) - 2
+        remlen = self.width - len(text) - 2
         proglen = int(remlen * per)
         bar = '[{}{}]'.format('#' * proglen, ' ' * (remlen - proglen))
         text += bar

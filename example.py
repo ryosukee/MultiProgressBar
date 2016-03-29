@@ -17,7 +17,8 @@ def hoge(p):
             num += random.randint(0, 10)
         p.print('result D: A:{} = {}'.format(i, num), order=9+i, nest=2)
 
-m = ProgressManager()
+#m = ProgressManager()
+m = ProgressManager(target=open('hoge', 'w'), width=50)
 progress_tree = m.new_tree()
 progress_tree2 = m.new_tree(offset=11)
 args = [progress_tree, progress_tree2]
