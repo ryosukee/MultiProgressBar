@@ -20,7 +20,7 @@ class ProgressManager:
         upnum = 0
         sp = target.tell()
         while self.is_running.value == 1:
-            text = '\n'.join(self.order2text.values())
+            text = '\n'.join(item[1] for item in sorted(self.order2text.items(), key=lambda x:x[0]))
             if target != sys.stdout:
                 target.seek(sp)
             else:
